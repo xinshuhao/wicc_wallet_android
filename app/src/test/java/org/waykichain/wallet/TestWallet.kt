@@ -63,7 +63,7 @@ class TestWallet {
         val mainKey = keyChain.getKeyByPath(BIP44Util.generatePath(BIP44Util.WAYKICHAIN_WALLET_PATH + "/0/0"), true)
         val address = LegacyAddress.fromPubKeyHash(networkParameters, mainKey.pubKeyHash).toString()
         val ecKey=ECKey.fromPrivate(mainKey.privKey)
-        logger.info("address   "+address+"\n"+"privatekey   "+ecKey.getPrivateKeyAsWiF(networkParameters))
+        System.out.print("address   "+address+"\n"+"privatekey   "+ecKey.getPrivateKeyAsWiF(networkParameters))
     }
 
     @Test
@@ -72,7 +72,7 @@ class TestWallet {
         val walletAddress = wallet.generateWalletAddress(WaykiNetworkType.MAIN_NET)
         val privKey = walletAddress.privKey
         val address = walletAddress.address
-        logger.info("\n\n$privKey \n$address\n\n")
+        System.out.print("\n\n$privKey \n$address\n\n")
         /**
          * PhKmEa3M6BJERHdStG7nApRwURDnN3W48rhrnnM1fVKbLs3jaYd6
          * WZ9gVk4sgBuW9oJVtsE2gos5aLXK7rEEwC
@@ -85,7 +85,7 @@ class TestWallet {
         val walletAddress = wallet.generateWalletAddress(WaykiNetworkType.TEST_NET)
         val privKey = walletAddress.privKey
         val address = walletAddress.address
-        logger.info("\n\n$privKey \n$address\n\n")
+        System.out.print("\n\n$privKey \n$address\n\n")
     }
 
     @Test
@@ -200,28 +200,4 @@ class TestWallet {
         System.out.println(hexStr)
     }
 
-    @Test
-    fun testGenerateDelegateForTestNet() {
-        val wallet = LegacyWallet()
-        val netParams = WaykiTestNetParams.instance
-
-        val srcPrivKeyWiF = "Y9HSQ4GGLUMhUYALoLQTZY42hUGW7dRBsmWy2TWWESZfqDAqKdCs"//"Y9XMqNzseQFSK32SvMDNF9J7xz1CQmHRsmY1hMYiqZyTck8pYae3"
-        val srcKey = DumpedPrivateKey.fromBase58(netParams, srcPrivKeyWiF).key
-        val srcAddress = LegacyAddress.fromPubKeyHash(netParams, srcKey.pubKeyHash).toString()
-
-        val destPrivKeyWif = "YB1ims24GnRCdrB8TJsiDrxos4S5bNS58qetjyFWhSDyxT9phCEa"
-        val destKey = DumpedPrivateKey.fromBase58(netParams, destPrivKeyWif).key
-        val destAddr = "whGSn4tTPSaEkgzHhUfXrdcwfriuPBKt3R"//LegacyAddress.fromPubKeyHash(netParams, destKey.pubKeyHash).toString()
-        System.out.println("Send 1 wicc from: $srcAddress to: $destAddr")
-
-        var votes=JSONArray()
-        var vote=JSONObject()
-       // vote.
-
-
-      //  val txParams = WaykiDelegateTxParams(WaykiNetworkType.TEST_NET, 430144, 10000, 100000000,"423318-1",destAddr )//"30947-1", destAddr)
-       // txParams.signTx(srcKey)
-       // val tx = wallet.createDelegateTransactionRaw(txParams)
-       // System.out.println(tx)
-    }
 }
