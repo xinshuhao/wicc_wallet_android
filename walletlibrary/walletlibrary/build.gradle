@@ -1,0 +1,23 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compile 'com.google.guava:guava:24.0-android'
+    compile 'com.google.protobuf:protobuf-java:3.5.1'
+    compile 'org.slf4j:slf4j-api:1.7.22'
+    compile 'com.madgag.spongycastle:core:1.58.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.9.1'
+    compile 'net.jcip:jcip-annotations:1.0'
+    compile 'org.fusesource.leveldbjni:leveldbjni-all:1.8'
+    compile "org.bouncycastle:bcprov-jdk15on:1.54"
+    compile "org.slf4j:slf4j-nop:1.7.2"
+}
+repositories {
+    mavenCentral()
+}
