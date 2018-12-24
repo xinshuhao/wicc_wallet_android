@@ -59,7 +59,8 @@ class WaykiContractTxParams(userPubKey: ByteArray, nValidHeight: Long, fees: Lon
      */
     override fun signTx(key: ECKey): ByteArray {
         val sigHash = this.getSignatureHash()
-        signature = NativeSecp256k1.sign(sigHash, key.privKeyBytes)
+        val ecSig = key.sign(Sha256Hash.wrap(sigHash))
+        signature =  ecSig.encodeToDER()//NativeSecp256k1.sign(sigHash, key.privKeyBytes)
 
         return signature!!
     }

@@ -26,7 +26,10 @@ import org.junit.Test
 import java.io.ByteArrayOutputStream
 import org.slf4j.LoggerFactory
 import com.google.common.base.Joiner
+import com.waykichain.wallet.base.OperVoteFund
+import com.waykichain.wallet.base.VoteOperType
 import com.waykichain.wallet.base.params.*
+import com.waykichain.wallet.util.ContractUtil
 import org.bitcoinj.params.MainNetParams
 import org.bitcoinj.wallet.DeterministicKeyChain
 import org.bitcoinj.wallet.DeterministicSeed
@@ -198,6 +201,73 @@ class TestWallet {
         val bytes = ss.toByteArray()
         val hexStr =  Utils.HEX.encode(bytes)
         System.out.println(hexStr)
+    }
+
+
+    @Test
+    fun testGenerateDelegateTx() {
+        val wallet = LegacyWallet()
+        val netParams = WaykiTestNetParams.instance
+
+        val srcPrivKeyWiF = "YAHcraeGRDpvwBWVccV7NLGAU6uK39nNUTip8srbJSu6HKSTfDcC"
+        val srcKey = DumpedPrivateKey.fromBase58(netParams, srcPrivKeyWiF).key
+        val srcAddress = LegacyAddress.fromPubKeyHash(netParams, srcKey.pubKeyHash).toString()
+
+        val destPrivKeyWif1 ="YB1ims24GnRCdrB8TJsiDrxos4S5bNS58qetjyFWhSDyxT9phCEa"
+        val destKey1 = DumpedPrivateKey.fromBase58(netParams, destPrivKeyWif1).key
+        val destAddr1 = LegacyAddress.fromPubKeyHash(netParams, destKey1.pubKeyHash).toString()
+        System.out.println("Vote 1 wicc from: $srcAddress to: $destAddr1")
+
+        val array4 = OperVoteFund(VoteOperType.ADD_FUND.value,destKey1.pubKey,100000000)
+        val array6 = arrayOf(array4)
+        val txParams = WaykiDelegateTxParams("25312-1", array6, 100000,579799)
+        txParams.signTx(srcKey)
+        val tx = wallet.createDelegateTransactionRaw(txParams)
+        System.out.println(tx)
+    }
+
+    @Test
+    fun testGenerateRevokeDelegateTx() {
+        val wallet = LegacyWallet()
+        val netParams = WaykiTestNetParams.instance
+
+        val srcPrivKeyWiF = "YAHcraeGRDpvwBWVccV7NLGAU6uK39nNUTip8srbJSu6HKSTfDcC"
+        val srcKey = DumpedPrivateKey.fromBase58(netParams, srcPrivKeyWiF).key
+        val srcAddress = LegacyAddress.fromPubKeyHash(netParams, srcKey.pubKeyHash).toString()
+
+        val destPrivKeyWif1 = "YB1ims24GnRCdrB8TJsiDrxos4S5bNS58qetjyFWhSDyxT9phCEa"
+        val destKey1 = DumpedPrivateKey.fromBase58(netParams, destPrivKeyWif1).key
+        val destAddr1 = LegacyAddress.fromPubKeyHash(netParams, destKey1.pubKeyHash).toString()
+        System.out.println("Vote 1 wicc from: $srcAddress to: $destAddr1")
+
+        val array4 = OperVoteFund(VoteOperType.MINUS_FUND.value,destKey1.pubKey,100000000)
+        val array6 = arrayOf(array4)
+        val txParams = WaykiDelegateTxParams("25312-1", array6, 100000,579782)
+        txParams.signTx(srcKey)
+        val tx = wallet.createDelegateTransactionRaw(txParams)
+        System.out.println(tx)
+    }
+
+    @Test
+    fun testGenerateContractTx() {
+        //以锁仓为例 锁仓90天
+        val wallet = LegacyWallet()
+        val netParams = WaykiMainNetParams.instance
+
+        val srcPrivKeyWiF ="PhKmEa3M6BJERHdStG7nApRwURDnN3W48rhrnnM1fVKbLs3jaYd6"
+        val srcKey = DumpedPrivateKey.fromBase58(netParams, srcPrivKeyWiF).key
+        System.out.println(LegacyAddress.fromPubKeyHash(netParams, srcKey.pubKeyHash).toString())
+
+        val value=100000000L //锁仓一个WICC
+        val header="f202" //需要调用的方法
+        val appid="450687-1"//合约锁仓90天合约的ID
+        val contract=header+ ContractUtil.to2HexString4byte(value)+"00000000"
+        System.out.println(contract)
+        val contractByte=ContractUtil.hexString2binaryString(contract)
+        val txParams = WaykiContractTxParams(srcKey.pubKey,494454, 100000, value, "926152-1",appid,contractByte)
+        txParams.signTx(srcKey)
+        val tx = wallet.createContractTransactionRaw(txParams)
+        System.out.println(tx)
     }
 
 }
